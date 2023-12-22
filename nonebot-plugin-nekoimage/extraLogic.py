@@ -91,13 +91,16 @@ async def request(url: str,
                   content: Optional[str] = None,
                   files: Optional[Dict] = None,
                   token: Optional[Dict] = None) -> dict:
-    async with httpx.AsyncClient() as client:
+    timeout = httpx.Timeout(timeout=config.httpx_timeout,
+                            read=config.httpx_timeout) if config.httpx_timeout is not None else httpx.Timeout()
+    async with httpx.AsyncClient(timeout=timeout) as client:
         if files:
             response = await client.post(url, params=payload, files=files, headers=token)
         elif content:
             response = await client.post(url, params=payload, content=content, headers=token)
         else:
             response = await client.get(url, params=payload, headers=token)
+
         response.raise_for_status()
         return response.json()
 
