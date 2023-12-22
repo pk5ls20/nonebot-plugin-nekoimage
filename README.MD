@@ -3,10 +3,11 @@ A nonebot plugin for integrating with [NekoImageGallery](https://github.com/hv09
 
 ## ENV
 ```env
-nekoImageAPI=http://127.0.0.1:8000
+nekoImageAPI=http://127.0.0.1:8000 
 nekoImageSecret=your-super-secret-access-token
 is_self_msg=false # Whether to process messages sent by the bot itself
 is_at_msg=true # Whether to process messages that <at> the bot
+remove_detail_url=true 
 ```
 ### Supported Adapter
 Use [nonebot-saa](https://github.com/MountainDash/nonebot-plugin-send-anything-anywhere) to enhance the compatibility, The adapters listed below have been adapted

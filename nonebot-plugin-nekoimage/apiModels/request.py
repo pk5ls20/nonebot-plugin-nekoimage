@@ -1,4 +1,5 @@
 import io
+import json
 import uuid
 import httpx
 from enum import Enum
@@ -98,8 +99,23 @@ class RandomSearchModel(BasicSearchModel):
     pass
 
 
-class AdvancedSearchModel(BaseModel):
+class AdvancedSearchModel(BasicSearchModel):
     criteria: list[str] = Field([], description="The positive criteria you want to search with", max_items=16)
     negative_criteria: list[str] = Field([], description="The negative criteria you want to search with", max_items=16)
     mode: SearchModelEnum = Field(SearchModelEnum.average,
                                   description="The mode you want to use to combine the criteria.")
+
+    def __call__(self, *args, **kwargs):
+        return self.payload, self.url, self.body
+
+    @property
+    def payload(self):
+        return self.dict(exclude={"criteria", "negative_criteria", "mode"})
+
+    @property
+    def url(self):
+        return f"{ApiRouteEnum.advanced.value}"
+
+    @property
+    def body(self):
+        return json.dumps(self.dict(include={"criteria", "negative_criteria", "mode"}))
