@@ -15,6 +15,7 @@ class ApiRouteEnum(str, Enum):
     similar = f"{config.nekoimageapi}/search/similar/"
     random = f"{config.nekoimageapi}/search/random"
     advanced = f"{config.nekoimageapi}/search/advanced"
+    combined = f"{config.nekoimageapi}/search/combined"
 
 
 class BasisSearchEnum(str, Enum):
@@ -32,7 +33,7 @@ class BasicSearchModel(BaseModel):
     skip: int = Field(default=0, ge=0)
 
     def __call__(self, *args, **kwargs):
-        return self.payload, self.url
+        return self.payload, self.url, None
 
     @property
     def payload(self):
@@ -47,7 +48,7 @@ class BasicSearchModel(BaseModel):
 
 
 class TextSearchModel(BasicSearchModel):
-    prompt: constr(min_length=2)
+    prompt: str
     basis: BasisSearchEnum
 
     @property
@@ -119,3 +120,20 @@ class AdvancedSearchModel(BasicSearchModel):
     @property
     def body(self):
         return json.dumps(self.dict(include={"criteria", "negative_criteria", "mode"}))
+
+
+class CombinedSearchModel(AdvancedSearchModel):
+    basis: BasisSearchEnum
+    extra_prompt: str
+
+    @property
+    def payload(self):
+        return self.dict(exclude={"criteria", "negative_criteria", "mode", "extra_prompt"})
+
+    @property
+    def url(self):
+        return f"{ApiRouteEnum.combined.value}"
+
+    @property
+    def body(self):
+        return json.dumps(self.dict(include={"criteria", "negative_criteria", "mode", "extra_prompt"}))

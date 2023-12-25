@@ -12,7 +12,7 @@ from nonebot.rule import Namespace
 from nonebot.adapters.qq import QQMessageEvent
 from nonebot.adapters.onebot.v11.event import MessageEvent as V11MessageEvent
 from nonebot_plugin_saa import Image, Text, MessageFactory
-from .apiModels.request import TextSearchModel
+from .apiModels.request import TextSearchModel, CombinedSearchModel
 from .apiModels.response import SearchResult, SearchApiResponse
 
 config = get_driver().config
@@ -53,11 +53,20 @@ async def handle_txtSearch_msg(event: Union[QQMessageEvent, V11MessageEvent],
     requestDict = vars(args)
     prompt = " ".join(requestDict['prompt']) if isinstance(requestDict['prompt'], list) else requestDict['prompt']
     prompt = prompt.join("  ") if len(prompt) <= 2 else prompt
-    Payload, Url = TextSearchModel(basis=basisValue,
-                                   prompt=prompt,
-                                   count=requestDict['num'],
-                                   index=requestDict['index'])()
-    await handle_search_msg(event, bot, args, matcher=matcher, requestPayload=Payload, requestUrl=Url)
+    if requestDict['extra']:
+        _extra = " ".join(requestDict['extra']) if isinstance(requestDict['extra'], list) else requestDict['extra']
+        payload, url, body = CombinedSearchModel(basis=basisValue,
+                                                 criteria=[prompt],
+                                                 extra_prompt=_extra,
+                                                 count=requestDict['num'],
+                                                 index=requestDict['index'])()
+    else:
+        payload, url, body = TextSearchModel(basis=basisValue,
+                                             prompt=prompt,
+                                             count=requestDict['num'],
+                                             index=requestDict['index'])()
+    await handle_search_msg(event, bot, args, matcher=matcher,
+                            requestPayload=payload, requestUrl=url, requestContent=body)
 
 
 async def handle_search_msg(event: Union[QQMessageEvent, V11MessageEvent],
