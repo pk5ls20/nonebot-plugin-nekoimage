@@ -64,7 +64,8 @@ async def handle_txtSearch_msg(event: Union[QQMessageEvent, V11MessageEvent],
         payload, url, body = TextSearchModel(basis=basisValue,
                                              prompt=prompt,
                                              count=requestDict['num'],
-                                             index=requestDict['index'])()
+                                             index=requestDict['index'],
+                                             exact=requestDict['exact'])()
     await handle_search_msg(event, bot, args, matcher=matcher,
                             requestPayload=payload, requestUrl=url, requestContent=body)
 

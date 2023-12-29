@@ -18,7 +18,8 @@ basicParser.add_argument("-d", "--detail", help="show detail result", action="st
 basicParser.add_argument("-i", "--index", help="fetch pic index", type=int, default=0)
 basicParser.add_argument("-n", "--num", help="fetch pic num", type=int, default=1)
 basicParser.add_argument("-e", "--extra", help="extra prompt in combinedSearch", type=str, nargs='*')
-
+basicParser.add_argument("-ex", "--exact", help="Returns the portion of the lookup result that contains "
+                                                "only the prompt.", action="store_true")
 advanceParser.add_argument("-d", "--detail", help="show detail result", action="store_true")
 advanceParser.add_argument("-i", "--index", help="fetch pic index", type=int, default=0)
 advanceParser.add_argument("-n", "--num", help="fetch pic num", type=int, default=1)

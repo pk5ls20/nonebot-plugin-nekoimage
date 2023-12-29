@@ -50,6 +50,7 @@ class BasicSearchModel(BaseModel):
 class TextSearchModel(BasicSearchModel):
     prompt: str
     basis: BasisSearchEnum
+    exact: bool = False
 
     @property
     def payload(self):
