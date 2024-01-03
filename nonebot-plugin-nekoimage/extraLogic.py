@@ -89,7 +89,7 @@ async def handle_search_msg(event: Union[QQMessageEvent, V11MessageEvent],
     if extraMsg:
         await MessageFactory([Text(extraMsg)]).send()
     if len(picList) == 0:
-        await matcher.finish("未找到图片哦~")
+        await MessageFactory([Text("No result found!")]).send()
     else:
         for idx, raw_res in enumerate(picList):
             await selfMessageFactory(oriInfo=res.result[idx], picByte=raw_res.content, isDetailed=args.detail).send()
