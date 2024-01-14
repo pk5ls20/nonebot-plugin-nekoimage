@@ -4,18 +4,18 @@ import uuid
 import httpx
 from enum import Enum
 from nonebot import get_driver
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field
 
 config = get_driver().config
 
 
 class ApiRouteEnum(str, Enum):
-    text = f"{config.nekoimageapi}/search/text/"
-    image = f"{config.nekoimageapi}/search/image"
-    similar = f"{config.nekoimageapi}/search/similar/"
-    random = f"{config.nekoimageapi}/search/random"
-    advanced = f"{config.nekoimageapi}/search/advanced"
-    combined = f"{config.nekoimageapi}/search/combined"
+    text = f"{config.nekoimage_api}/search/text/"
+    image = f"{config.nekoimage_api}/search/image"
+    similar = f"{config.nekoimage_api}/search/similar/"
+    random = f"{config.nekoimage_api}/search/random"
+    advanced = f"{config.nekoimage_api}/search/advanced"
+    combined = f"{config.nekoimage_api}/search/combined"
 
 
 class BasisSearchEnum(str, Enum):
@@ -31,9 +31,10 @@ class SearchModelEnum(str, Enum):
 class BasicSearchModel(BaseModel):
     count: int = Field(default=10, ge=1, le=100)
     skip: int = Field(default=0, ge=0)
+    _method: str = "get"
 
     def __call__(self, *args, **kwargs):
-        return self.payload, self.url, None
+        return self.payload, self.url, self.method, None
 
     @property
     def payload(self):
@@ -42,6 +43,10 @@ class BasicSearchModel(BaseModel):
     @property
     def url(self):
         return f"{ApiRouteEnum[self.__class__.__name__.replace('SearchModel', '').lower()].value}"
+
+    @property
+    def method(self):
+        return self._method
 
     class Config:
         use_enum_values = True
@@ -54,7 +59,7 @@ class TextSearchModel(BasicSearchModel):
 
     @property
     def payload(self):
-        return self.dict(by_alias=True, exclude={"prompt"})
+        return self.dict(by_alias=True, exclude={"prompt", "method"})
 
     @property
     def url(self):
@@ -63,14 +68,15 @@ class TextSearchModel(BasicSearchModel):
 
 class ImageSearchModel(BasicSearchModel):
     image: str
+    _method: str = "post"
 
     async def __call__(self, *args, **kwargs):
         pic_data = await self.pic
-        return self.payload, self.url, pic_data
+        return self.payload, self.url, self.method, pic_data
 
     @property
     def payload(self):
-        return self.dict(by_alias=True, exclude={"image"})
+        return self.dict(by_alias=True, exclude={"image", "method"})
 
     @property
     async def pic(self):
@@ -90,7 +96,7 @@ class SimilarSearchModel(BasicSearchModel):
 
     @property
     def payload(self):
-        return self.dict(by_alias=True, exclude={"id"})
+        return self.dict(by_alias=True, exclude={"id", "method"})
 
     @property
     def url(self):
@@ -106,13 +112,14 @@ class AdvancedSearchModel(BasicSearchModel):
     negative_criteria: list[str] = Field([], description="The negative criteria you want to search with", max_items=16)
     mode: SearchModelEnum = Field(SearchModelEnum.average,
                                   description="The mode you want to use to combine the criteria.")
+    _method: str = "post"
 
     def __call__(self, *args, **kwargs):
-        return self.payload, self.url, self.body
+        return self.payload, self.url, self.method, self.body
 
     @property
     def payload(self):
-        return self.dict(exclude={"criteria", "negative_criteria", "mode"})
+        return self.dict(exclude={"criteria", "negative_criteria", "mode", "method"})
 
     @property
     def url(self):
@@ -126,10 +133,11 @@ class AdvancedSearchModel(BasicSearchModel):
 class CombinedSearchModel(AdvancedSearchModel):
     basis: BasisSearchEnum
     extra_prompt: str
+    _method: str = "post"
 
     @property
     def payload(self):
-        return self.dict(exclude={"criteria", "negative_criteria", "mode", "extra_prompt"})
+        return self.dict(exclude={"criteria", "negative_criteria", "mode", "extra_prompt", "method"})
 
     @property
     def url(self):
