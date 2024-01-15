@@ -1,7 +1,8 @@
-from nonebot import get_driver
+from nonebot import get_driver, require
 from nonebot.plugin import PluginMetadata
 from .Models.config import ConfigModel
-from . import Matchers
+
+require("nonebot_plugin_saa")
 
 __plugin_meta = PluginMetadata(
     name="nonebot-plugin-nekoimage",
@@ -13,6 +14,7 @@ __plugin_meta = PluginMetadata(
     supported_adapters={"~onebot.v11", "~qq"},
 )
 
+from . import Matchers
 config = get_driver().config
 assert config.nekoimage_api
 assert config.nekoimage_secret
