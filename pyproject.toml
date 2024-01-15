@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-nekoimage"
-version = "0.3.1"
+version = "0.3.2"
 description = "A nonebot plugin for integrating with NekoImageGallery"
 license = "AGPL-3.0"
 authors = ["pk5ls20 <pk5ls20@outlook.com>"]
@@ -9,7 +9,7 @@ homepage = "https://github.com/pk5ls20/nonebot-plugin-nekoimage"
 repository = "https://github.com/pk5ls20/nonebot-plugin-nekoimage"
 documentation = "https://github.com/pk5ls20/nonebot-plugin-nekoimage/wiki"
 keywords = ["nonebot", "nonebot2"]
-packages = [{ include = "nonebot-plugin-nekoimage"}]
+packages = [{ include = "nonebot_plugin_nekoimage"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
