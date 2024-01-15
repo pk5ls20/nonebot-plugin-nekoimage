@@ -4,7 +4,7 @@ from .Models.config import ConfigModel
 
 require("nonebot_plugin_saa")
 
-__plugin_meta = PluginMetadata(
+__plugin_meta__ = PluginMetadata(
     name="nonebot-plugin-nekoimage",
     description="A nonebot plugin for integrating with [NekoImageGallery](https://github.com/hv0905/NekoImageGallery).",
     usage="",
